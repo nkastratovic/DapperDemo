@@ -8,7 +8,8 @@ namespace Web.Api.Endpoints
     {
         public static void MapCustomerEndpoints(this IEndpointRouteBuilder builder)
         {
-            builder.MapGet("customers", async (SqlConnectionFactory sqlConnectionFactory) =>
+            var group = builder.MapGroup("customers");
+            group.MapGet("", async (SqlConnectionFactory sqlConnectionFactory) =>
             {
                 using var connection = sqlConnectionFactory.Create();
                 const string sql = "SELECT * FROM Customer";
@@ -16,7 +17,7 @@ namespace Web.Api.Endpoints
                 return Results.Ok(customers);
             });
 
-            builder.MapGet("customers/id", async (int id, SqlConnectionFactory sqlConnectionFactory) =>
+            group.MapGet("id", async (int id, SqlConnectionFactory sqlConnectionFactory) =>
             {
                 using var connection = sqlConnectionFactory.Create();
                 const string sql = "SELECT * FROM Customer WHERE Id = @CustomerId";
@@ -24,7 +25,7 @@ namespace Web.Api.Endpoints
                 return customer is not null ? Results.Ok(customer) : Results.NotFound();
             });
 
-            builder.MapPost("customers", async (Customer customer, SqlConnectionFactory sqlConnectionFactory) =>
+            group.MapPost("", async (Customer customer, SqlConnectionFactory sqlConnectionFactory) =>
             {
                 using var connection = sqlConnectionFactory.Create();
                 const string sql = "INSERT INTO Customer (Id, FirstName, LastName, Email, DateOfBirth) VALUES (@Id, @FirstName, @LastName, @Email, @DateOfBirth)";
@@ -32,7 +33,7 @@ namespace Web.Api.Endpoints
                 return Results.Ok();
             });
 
-            builder.MapPut("customers/id", async (int id, Customer customer, SqlConnectionFactory sqlConnectionFactory) =>
+            group.MapPut("id", async (int id, Customer customer, SqlConnectionFactory sqlConnectionFactory) =>
             {
                 using var connection = sqlConnectionFactory.Create();
                 const string sql = """
@@ -44,7 +45,7 @@ namespace Web.Api.Endpoints
             });
 
 
-            builder.MapDelete("customers/id", async (int id, SqlConnectionFactory sqlConnectionFactory) =>
+            group.MapDelete("id", async (int id, SqlConnectionFactory sqlConnectionFactory) =>
             {
                 using var connection = sqlConnectionFactory.Create();
                 const string sql = "DELETE from Customer WHERE Id = @CustomerId";
